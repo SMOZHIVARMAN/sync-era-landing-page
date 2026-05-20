@@ -16,8 +16,6 @@ export function Contact() {
     <section id="contact" className="relative py-24 md:py-32">
       <div className="container-prose">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-foreground to-[oklch(0.22_0.04_255)] p-10 text-background shadow-elev md:p-16">
-          <div aria-hidden className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-brand/30 blur-3xl" />
-          <div aria-hidden className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-success/20 blur-3xl" />
           <div className="relative mx-auto max-w-3xl text-center">
             <h2 className="text-balance font-display text-4xl font-bold tracking-tight md:text-5xl">
               Let's build something exceptional together.

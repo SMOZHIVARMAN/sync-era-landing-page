@@ -47,7 +47,7 @@ export function Process() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 md:py-32 bg-surface/30 overflow-hidden"
+      className="relative py-24 md:py-32 bg-surface overflow-hidden"
     >
       <div className="container-prose relative">
         {/* Section Header */}
