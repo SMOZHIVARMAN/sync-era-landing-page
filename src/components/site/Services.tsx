@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import * as Icons from "lucide-react";
 import { useSheet } from "@/hooks/useSheet";
 import { transformServices } from "@/services/transformData";
-import { fbServices } from "@/data/fallbacks";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 function Icon({ name, className }: { name: string; className?: string }) {
   const C = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name] ?? Icons.Sparkles;
@@ -21,8 +21,13 @@ export function SectionHeader({ kicker, title, subtitle }: { kicker: string; tit
 }
 
 export function Services() {
-  const { data } = useSheet("services", transformServices, fbServices);
+  const { data: raw, loading } = useSheet("services");
+  const data = transformServices(raw);
+  console.log("Transformed Services:", data);
   const [flipped, setFlipped] = useState<string | null>(null);
+
+  if (loading) return <div className="min-h-[400px]" />;
+  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
 
   return (
     <section id="services" className="relative py-24 md:py-32">
@@ -50,8 +55,9 @@ export function Services() {
                        }}
                        className="absolute inset-0 z-10 flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-card transition-shadow duration-500 group-hover:shadow-elev">
                     {s.image && (
-                      <img src={s.image} alt="" loading="lazy"
-                           className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.08]" />
+                      <img src={s.image || undefined} alt="" loading="lazy"
+                           className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.08]" 
+                           onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                     )}
                     <div className="relative" style={{ transform: "translateZ(20px)" }}>
                       <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand/10 text-brand">

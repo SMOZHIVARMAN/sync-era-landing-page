@@ -1,20 +1,23 @@
 import { useSheet } from "@/hooks/useSheet";
 import { transformTech } from "@/services/transformData";
-import { fbTech } from "@/data/fallbacks";
 import { SectionHeader } from "./Services";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 export function Technologies() {
-  const { data } = useSheet("technologies", transformTech, fbTech);
-  if (!data.length) return null;
+  const { data: raw, loading } = useSheet("technologies");
+  const data = transformTech(raw);
+  
+  if (loading) return <div className="min-h-[400px]" />;
+  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
 
   // chunk into 3 rows of 6
   const perRow = 6;
   const rows: typeof data[] = [];
   for (let i = 0; i < 3; i++) {
     const start = (i * perRow) % data.length;
-    const r = [...data.slice(start), ...data.slice(0, start)].slice(0, perRow);
-    while (r.length < perRow) r.push(...data.slice(0, perRow - r.length));
-    rows.push(r);
+    const row = [...data.slice(start), ...data.slice(0, start)].slice(0, perRow);
+    while (row.length < perRow) row.push(...data.slice(0, perRow - row.length));
+    rows.push(row);
   }
 
   return (
@@ -39,7 +42,13 @@ function MarqueeRow({ items, reverse }: { items: { name: string; iconUrl: string
         {doubled.map((t, i) => (
           <div key={i} className="flex w-56 shrink-0 items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-soft transition-transform hover:-translate-y-0.5">
             {t.iconUrl ? (
-              <img src={t.iconUrl} alt={t.name} className="h-8 w-8 object-contain" loading="lazy" />
+              <img 
+                src={t.iconUrl || undefined} 
+                alt={t.name} 
+                className="h-8 w-8 object-contain" 
+                loading="lazy" 
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
             ) : (
               <div className="h-8 w-8 rounded-lg bg-secondary" />
             )}

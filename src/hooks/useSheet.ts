@@ -1,25 +1,44 @@
 import { useEffect, useState } from "react";
-import { fetchSheet, type SheetTab, type SheetRow } from "@/services/googleSheetsService";
+import { fetchSheet } from "@/services/googleSheetsService";
 
-export function useSheet<T>(tab: SheetTab, transform: (rows: SheetRow[]) => T, fallback: T) {
-  const [data, setData] = useState<T>(fallback);
+export function useSheet(sheetName: string) {
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
-    let alive = true;
-    fetchSheet(tab)
-      .then((rows) => {
-        if (!alive) return;
-        if (rows.length === 0) {
-          setData(fallback);
-        } else {
-          try { setData(transform(rows)); } catch { setData(fallback); }
-        }
-      })
-      .finally(() => alive && setLoading(false));
-    return () => { alive = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab]);
+    let cancelled = false;
 
-  return { data, loading };
+    async function load() {
+      try {
+        setLoading(true);
+        const result = await fetchSheet(sheetName);
+        console.log("Sheet:", sheetName, result);
+        if (!cancelled) {
+          setData(Array.isArray(result) ? result : []);
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sheetName]);
+
+  return {
+    data,
+    loading,
+    error,
+  };
 }

@@ -1,14 +1,16 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSheet } from "@/hooks/useSheet";
 import { transformFaq } from "@/services/transformData";
-import { fbFaq } from "@/data/fallbacks";
 import { SectionHeader } from "./Services";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 export function FAQ() {
-  const { data } = useSheet("faq", transformFaq, fbFaq);
-  const grouped = useMemo(() => {
+  const { data: raw, loading } = useSheet("faq");
+  const data = transformFaq(raw);
+  
+  const grouped = (() => {
     const map = new Map<string, typeof data>();
     data.forEach((f) => {
       const k = f.category || "General";
@@ -16,7 +18,10 @@ export function FAQ() {
       map.get(k)!.push(f);
     });
     return Array.from(map.entries());
-  }, [data]);
+  })();
+
+  if (loading) return <div className="min-h-[400px]" />;
+  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
 
   return (
     <section id="faq" className="relative py-24 md:py-32">

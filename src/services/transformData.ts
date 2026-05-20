@@ -1,6 +1,7 @@
 import type { SheetRow } from "./googleSheetsService";
 
 const pick = (r: SheetRow, ...keys: string[]) => {
+  if (!r) return "";
   for (const k of keys) {
     const found = Object.keys(r).find((kk) => kk.toLowerCase() === k.toLowerCase());
     if (found && r[found] && r[found].trim() !== "") return r[found].trim();
@@ -8,28 +9,66 @@ const pick = (r: SheetRow, ...keys: string[]) => {
   return "";
 };
 
-const bool = (v: string) => ["true", "yes", "1", "y"].includes(v.toLowerCase());
+function isActive(value: any) {
+  return ["active", "true", "1", "yes"].includes(String(value).toLowerCase().trim());
+}
+
+const bool = (v: string) => isActive(v);
 const list = (v: string) => v.split(/[,;|]/).map((s) => s.trim()).filter(Boolean);
+
+const normalizeIcon = (name: string) => {
+  if (!name) return "";
+  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
+const active = (rows: SheetRow[]) => {
+  if (!Array.isArray(rows)) return [];
+  return rows.filter((r) => {
+    const status = pick(r, "status", "active");
+    if (status === "") return true; // Default to active if column is missing or empty
+    return isActive(status);
+  });
+};
+
+const sorted = (rows: SheetRow[]) => {
+  if (!Array.isArray(rows)) return [];
+  return [...rows].sort((a, b) => {
+    const oa = parseInt(pick(a, "order") || "999");
+    const ob = parseInt(pick(b, "order") || "999");
+    return oa - ob;
+  });
+};
+
+export const transformSettings = (rows: any[] = []) => {
+  if (!Array.isArray(rows) || !rows.length) return {} as any;
+  const r = rows[0];
+  return {
+    company_name: pick(r, "company_name") || "Coming Soon",
+    tagline: pick(r, "tagline") || "Coming Soon",
+    logo_url: pick(r, "logo_url") || "",
+    favicon_url: pick(r, "favicon_url") || "",
+    primary_color: pick(r, "primary_color") || "",
+    secondary_color: pick(r, "secondary_color") || "",
+    email: pick(r, "email") || "",
+    phone: pick(r, "phone") || "",
+    address: pick(r, "address") || ""
+  };
+};
 
 export type HeroData = {
   badge: string; heading: string; subheading: string;
-  ctaPrimary: string; ctaPrimaryHref: string;
-  ctaSecondary: string; ctaSecondaryHref: string;
-  intro: string;
+  ctaPrimary: string; ctaSecondary: string; image: string;
 };
-export const transformHero = (rows: SheetRow[]): HeroData => {
-  const r = rows[0] ?? {};
+export const transformHero = (rows: any[] = []): HeroData => {
+  if (!Array.isArray(rows)) return {} as any;
+  const r = active(rows)[0] ?? {};
   return {
-    badge: pick(r, "badge") || "Premium Digital Agency",
-    heading: pick(r, "heading", "title") || "Engineering exceptional digital products.",
-    subheading: pick(r, "subheading", "subtitle") ||
-      "Syncera partners with ambitious teams to design, build, and scale software that moves the business.",
-    ctaPrimary: pick(r, "cta_primary", "ctaPrimary") || "Start a Project",
-    ctaPrimaryHref: pick(r, "cta_primary_href", "ctaPrimaryHref") || "#contact",
-    ctaSecondary: pick(r, "cta_secondary", "ctaSecondary") || "View Our Work",
-    ctaSecondaryHref: pick(r, "cta_secondary_href", "ctaSecondaryHref") || "#work",
-    intro: pick(r, "intro", "company_intro") ||
-      "An enterprise-grade studio for product, engineering and growth.",
+    badge: pick(r, "badge_text", "badge"),
+    heading: pick(r, "heading", "title"),
+    subheading: pick(r, "subheading", "subtitle"),
+    ctaPrimary: pick(r, "cta_primary"),
+    ctaSecondary: pick(r, "cta_secondary"),
+    image: pick(r, "hero_image", "image"),
   };
 };
 
@@ -37,136 +76,192 @@ export type ServiceItem = {
   id: string; title: string; description: string; longDescription: string;
   icon: string; image: string; featured: boolean;
 };
-export const transformServices = (rows: SheetRow[]): ServiceItem[] =>
-  rows.map((r, i) => ({
+export const transformServices = (rows: any[] = []): ServiceItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return sorted(active(rows)).map((r, i) => ({
     id: pick(r, "id") || String(i),
-    title: pick(r, "title", "name") || "",
-    description: pick(r, "description", "short_description") || "",
-    longDescription: pick(r, "long_description", "full_description", "details") ||
-      pick(r, "description"),
-    icon: pick(r, "icon") || "Sparkles",
-    image: pick(r, "image", "image_url", "background_image") || "",
+    title: pick(r, "title"),
+    description: pick(r, "short_description", "description"),
+    longDescription: pick(r, "long_description"),
+    icon: normalizeIcon(pick(r, "icon")),
+    image: pick(r, "image_url", "image"),
     featured: bool(pick(r, "featured")),
   }));
+};
 
 export type ProjectItem = {
-  id: string; title: string; description: string; image: string;
-  date: string; category: string; technologies: string[];
-  liveUrl: string; githubUrl: string; featured: boolean;
+  id: string; title: string; category: string; client: string;
+  description: string; fullDescription: string; technologies: string[];
+  gallery: string[]; liveUrl: string; githubUrl: string;
+  featured: boolean; date: string;
 };
-export const transformProjects = (rows: SheetRow[]): ProjectItem[] =>
-  rows.map((r, i) => ({
+export const transformProjects = (rows: any[] = []): ProjectItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return active(rows).map((r, i) => ({
     id: pick(r, "id") || String(i),
-    title: pick(r, "title", "name"),
-    description: pick(r, "description"),
-    image: pick(r, "image", "image_url", "background_image"),
-    date: pick(r, "date", "completion_date", "completed"),
+    title: pick(r, "project_name", "title"),
     category: pick(r, "category"),
-    technologies: list(pick(r, "technologies", "tech", "stack")),
-    liveUrl: pick(r, "live_url", "url", "live"),
-    githubUrl: pick(r, "github_url", "github", "repo"),
+    client: pick(r, "client_name"),
+    description: pick(r, "short_description"),
+    fullDescription: pick(r, "full_description"),
+    technologies: list(pick(r, "technologies")),
+    gallery: list(pick(r, "gallery_images")),
+    liveUrl: pick(r, "live_url"),
+    githubUrl: pick(r, "github_url"),
     featured: bool(pick(r, "featured")),
+    date: pick(r, "completion_date"),
   }));
+};
 
 export type TestimonialItem = {
   name: string; company: string; role: string; review: string;
-  image: string; rating: number;
+  image: string; rating: number; featured: boolean;
 };
-export const transformTestimonials = (rows: SheetRow[]): TestimonialItem[] =>
-  rows.map((r) => ({
-    name: pick(r, "name"),
+export const transformTestimonials = (rows: any[] = []): TestimonialItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return active(rows).map((r) => ({
+    name: pick(r, "client_name", "name"),
     company: pick(r, "company"),
-    role: pick(r, "role", "position"),
-    review: pick(r, "review", "quote", "content"),
-    image: pick(r, "image", "image_url", "avatar"),
+    role: pick(r, "role"),
+    review: pick(r, "review"),
+    image: pick(r, "profile_image", "image"),
     rating: Number(pick(r, "rating")) || 5,
+    featured: bool(pick(r, "featured")),
   }));
+};
 
 export type TeamMember = {
   name: string; role: string; bio: string; image: string;
-  linkedin: string; twitter: string; github: string;
+  linkedin: string; github: string; twitter: string; instagram: string;
 };
-export const transformTeam = (rows: SheetRow[]): TeamMember[] =>
-  rows.map((r) => ({
+export const transformTeam = (rows: any[] = []): TeamMember[] => {
+  if (!Array.isArray(rows)) return [];
+  return active(rows).map((r) => ({
     name: pick(r, "name"),
-    role: pick(r, "role", "position"),
-    bio: pick(r, "bio", "description"),
-    image: pick(r, "image", "image_url", "photo"),
+    role: pick(r, "role"),
+    bio: pick(r, "bio"),
+    image: pick(r, "image_url", "image"),
     linkedin: pick(r, "linkedin"),
-    twitter: pick(r, "twitter", "x"),
     github: pick(r, "github"),
+    twitter: pick(r, "twitter"),
+    instagram: pick(r, "instagram"),
   }));
+};
 
-export type TechItem = { name: string; iconUrl: string; category: string };
-export const transformTech = (rows: SheetRow[]): TechItem[] =>
-  rows.map((r) => ({
-    name: pick(r, "name", "title"),
-    iconUrl: pick(r, "icon_url", "icon", "image"),
+export type TechItem = { name: string; category: string; iconUrl: string; proficiency: number; featured: boolean };
+export const transformTech = (rows: any[] = []): TechItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return active(rows).map((r) => ({
+    name: pick(r, "technology_name", "name"),
     category: pick(r, "category"),
+    iconUrl: pick(r, "icon_url"),
+    proficiency: Number(pick(r, "proficiency")) || 0,
+    featured: bool(pick(r, "featured")),
   }));
+};
 
 export type StatItem = { label: string; value: number; suffix: string; icon: string };
-export const transformStats = (rows: SheetRow[]): StatItem[] =>
-  rows.map((r) => ({
-    label: pick(r, "label", "title", "name"),
-    value: Number(pick(r, "value", "number")) || 0,
-    suffix: pick(r, "suffix") || "+",
-    icon: pick(r, "icon") || "Sparkles",
+export const transformStats = (rows: any[] = []): StatItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return sorted(rows).map((r) => ({
+    label: pick(r, "title"),
+    value: Number(pick(r, "value")) || 0,
+    suffix: pick(r, "suffix") || "",
+    icon: normalizeIcon(pick(r, "icon")),
   }));
+};
 
 export type FaqItem = { question: string; answer: string; category: string };
-export const transformFaq = (rows: SheetRow[]): FaqItem[] =>
-  rows.map((r) => ({
-    question: pick(r, "question", "q"),
-    answer: pick(r, "answer", "a"),
-    category: pick(r, "category") || "General",
+export const transformFaq = (rows: any[] = []): FaqItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return sorted(active(rows)).map((r) => ({
+    question: pick(r, "question"),
+    answer: pick(r, "answer"),
+    category: pick(r, "category"),
   }));
+};
 
-export type ContactsData = { email: string; phone: string; address: string };
-export const transformContacts = (rows: SheetRow[]): ContactsData => {
-  const r = rows[0] ?? {};
-  return {
-    email: pick(r, "email"),
-    phone: pick(r, "phone", "tel"),
-    address: pick(r, "address", "location"),
-  };
+export type ContactsData = Record<string, string>;
+export const transformContacts = (rows: any[] = []): ContactsData => {
+  const contacts: ContactsData = {};
+  if (!Array.isArray(rows)) return contacts;
+  rows.forEach((r) => {
+    const type = pick(r, "type");
+    const val = pick(r, "value");
+    if (type && val) contacts[type.toLowerCase()] = val;
+  });
+  return contacts;
 };
 
 export type SocialLink = { platform: string; url: string; icon: string };
-export const transformSocial = (rows: SheetRow[]): SocialLink[] =>
-  rows.map((r) => ({
-    platform: pick(r, "platform", "name"),
-    url: pick(r, "url", "link"),
-    icon: pick(r, "icon") || pick(r, "platform"),
+export const transformSocial = (rows: any[] = []): SocialLink[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.filter(r => bool(pick(r, "active"))).map((r) => ({
+    platform: pick(r, "platform"),
+    url: pick(r, "url"),
+    icon: normalizeIcon(pick(r, "icon")),
   }));
+};
 
-export type ProcessStep = { step: string; title: string; description: string; icon: string };
-export const transformProcess = (rows: SheetRow[]): ProcessStep[] =>
-  rows.map((r, i) => ({
-    step: pick(r, "step", "number") || String(i + 1).padStart(2, "0"),
-    title: pick(r, "title", "name"),
+export type ProcessStep = { title: string; description: string; icon: string; order: number };
+export const transformProcess = (rows: any[] = []): ProcessStep[] => {
+  if (!Array.isArray(rows)) return [];
+  return sorted(rows).map((r) => ({
+    title: pick(r, "title"),
     description: pick(r, "description"),
-    icon: pick(r, "icon") || "Workflow",
+    icon: normalizeIcon(pick(r, "icon")),
+    order: Number(pick(r, "order")) || 0,
   }));
+};
 
-export type ClientItem = { name: string; logo: string };
-export const transformClients = (rows: SheetRow[]): ClientItem[] =>
-  rows.map((r) => ({
-    name: pick(r, "name", "title"),
-    logo: pick(r, "logo", "image", "image_url"),
+export type ClientItem = { name: string; logo: string; website: string; featured: boolean };
+export const transformClients = (rows: any[] = []): ClientItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((r) => ({
+    name: pick(r, "company_name", "name"),
+    logo: pick(r, "logo_url", "logo"),
+    website: pick(r, "website"),
+    featured: bool(pick(r, "featured")),
   }));
+};
 
 export type SeoData = {
-  title: string; description: string; keywords: string; ogImage: string;
+  page: string; title: string; description: string; keywords: string[]; ogImage: string;
 };
-export const transformSeo = (rows: SheetRow[]): SeoData => {
-  const r = rows[0] ?? {};
-  return {
-    title: pick(r, "title", "page_title") ||
-      "Syncera — Premium Digital Agency for Ambitious Teams",
-    description: pick(r, "description", "meta_description") ||
-      "Syncera designs and builds enterprise-grade digital products with measurable impact.",
-    keywords: pick(r, "keywords"),
-    ogImage: pick(r, "og_image", "image"),
-  };
+export const transformSeo = (rows: any[] = []): SeoData[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((r) => ({
+    page: pick(r, "page"),
+    title: pick(r, "title"),
+    description: pick(r, "description"),
+    keywords: list(pick(r, "keywords")),
+    ogImage: pick(r, "og_image"),
+  }));
+};
+
+export type ValueItem = { title: string; desc: string; icon: string };
+export const transformValues = (rows: any[] = []): ValueItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return sorted(active(rows)).map((r) => ({
+    title: pick(r, "title"),
+    desc: pick(r, "description", "desc"),
+    icon: normalizeIcon(pick(r, "icon")),
+  }));
+};
+
+export type CareerItem = {
+  id: string; position: string; department: string; location: string;
+  employmentType: string; description: string; applyUrl: string;
+};
+export const transformCareers = (rows: any[] = []): CareerItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return active(rows).map((r, i) => ({
+    id: pick(r, "id") || String(i),
+    position: pick(r, "position"),
+    department: pick(r, "department"),
+    location: pick(r, "location"),
+    employmentType: pick(r, "employment_type"),
+    description: pick(r, "description"),
+    applyUrl: pick(r, "apply_url"),
+  }));
 };

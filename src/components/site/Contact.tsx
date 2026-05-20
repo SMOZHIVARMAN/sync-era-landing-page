@@ -2,11 +2,15 @@ import { useState } from "react";
 import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { useSheet } from "@/hooks/useSheet";
 import { transformContacts } from "@/services/transformData";
-import { fbContacts } from "@/data/fallbacks";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 export function Contact() {
-  const { data } = useSheet("contacts", transformContacts, fbContacts);
+  const { data: raw, loading } = useSheet("contacts");
+  const data = transformContacts(raw);
   const [sent, setSent] = useState(false);
+
+  if (loading) return <div className="min-h-[600px]" />;
+  if (!raw.length || !data || Object.keys(data).length === 0) return <SectionSkeleton title="Coming Soon" />;
 
   return (
     <section id="contact" className="relative py-24 md:py-32">
@@ -38,9 +42,9 @@ export function Contact() {
             <h3 className="mt-3 font-display text-3xl font-bold text-ink">A senior partner replies, always.</h3>
             <p className="mt-3 text-muted-foreground">No SDR funnels. Your first conversation is with someone who will work on the engagement.</p>
             <div className="mt-8 space-y-4">
-              {data.email && <ContactRow icon={<Mail className="h-4 w-4" />} label="Email" value={data.email} href={`mailto:${data.email}`} />}
-              {data.phone && <ContactRow icon={<Phone className="h-4 w-4" />} label="Phone" value={data.phone} href={`tel:${data.phone}`} />}
-              {data.address && <ContactRow icon={<MapPin className="h-4 w-4" />} label="Studios" value={data.address} />}
+              {data?.email && <ContactRow icon={<Mail className="h-4 w-4" />} label="Email" value={data.email} href={`mailto:${data.email}`} />}
+              {data?.phone && <ContactRow icon={<Phone className="h-4 w-4" />} label="Phone" value={data.phone} href={`tel:${data.phone}`} />}
+              {data?.address && <ContactRow icon={<MapPin className="h-4 w-4" />} label="Studios" value={data.address} />}
             </div>
           </div>
 

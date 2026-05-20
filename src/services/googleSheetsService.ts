@@ -4,6 +4,7 @@ import { cacheManager } from "./cacheManager";
 const SHEET_ID = (import.meta.env.VITE_GOOGLE_SHEET_ID as string | undefined)?.trim();
 
 export const SHEET_TABS = {
+  Site_setting: "Site_setting",
   hero: "Hero_Section",
   services: "Services",
   projects: "Projects",
@@ -18,6 +19,7 @@ export const SHEET_TABS = {
   process: "process_steps",
   clients: "Client",
   seo: "SEO",
+  values: "Our_Values",
 } as const;
 
 export type SheetTab = keyof typeof SHEET_TABS;

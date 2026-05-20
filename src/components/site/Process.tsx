@@ -3,8 +3,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import * as Icons from "lucide-react";
 import { useSheet } from "@/hooks/useSheet";
 import { transformProcess } from "@/services/transformData";
-import { fbProcess } from "@/data/fallbacks";
 import { SectionHeader } from "./Services";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 function Icon({ name, className }: { name: string; className?: string }) {
   const C = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name] ?? Icons.Workflow;
@@ -12,11 +12,15 @@ function Icon({ name, className }: { name: string; className?: string }) {
 }
 
 export function Process() {
-  const { data } = useSheet("process", transformProcess, fbProcess);
+  const { data: raw, loading } = useSheet("process");
+  const data = transformProcess(raw);
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   // travel
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-66%"]);
+
+  if (loading) return <div className="min-h-[600px]" />;
+  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
 
   return (
     <section id="process" ref={ref} className="relative" style={{ height: `${data.length * 70}vh` }}>
@@ -24,11 +28,11 @@ export function Process() {
         <div className="container-prose">
           <SectionHeader kicker="How we work" title="A studio operating system, end to end" subtitle="Six phases that turn ambiguity into momentum — with measurable outputs every step of the way." />
         </div>
-        <motion.div style={{ x }} className="mt-14 flex w-max gap-6 px-[12vw]">
+        <motion.div style={{ x: x || "0%" }} className="mt-14 flex w-max gap-6 px-[12vw]">
           {data.map((s, i) => (
-            <div key={s.step} className="relative w-[78vw] max-w-[440px] shrink-0 rounded-2xl border border-border bg-card p-8 shadow-card">
+            <div key={i} className="relative w-[78vw] max-w-[440px] shrink-0 rounded-2xl border border-border bg-card p-8 shadow-card">
               <div className="flex items-center justify-between">
-                <span className="font-display text-5xl font-bold text-brand/20">{s.step}</span>
+                <span className="font-display text-5xl font-bold text-brand/20">{String(i + 1).padStart(2, "0")}</span>
                 <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand/10 text-brand">
                   <Icon name={s.icon} className="h-5 w-5" />
                 </div>

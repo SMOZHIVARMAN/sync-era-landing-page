@@ -1,12 +1,16 @@
 import { Star } from "lucide-react";
 import { useSheet } from "@/hooks/useSheet";
 import { transformTestimonials } from "@/services/transformData";
-import { fbTestimonials } from "@/data/fallbacks";
 import { SectionHeader } from "./Services";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 export function Testimonials() {
-  const { data } = useSheet("testimonials", transformTestimonials, fbTestimonials);
-  if (!data.length) return null;
+  const { data: raw, loading } = useSheet("testimonials");
+  const data = transformTestimonials(raw);
+  
+  if (loading) return <div className="min-h-[400px]" />;
+  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
+  
   const doubled = [...data, ...data];
 
   return (
@@ -19,7 +23,7 @@ export function Testimonials() {
           {doubled.map((t, i) => (
             <figure key={i} className="w-[360px] shrink-0 rounded-2xl border border-border bg-card p-7 shadow-soft transition-all hover:-translate-y-1 hover:shadow-card">
               <div className="flex gap-0.5 text-amber-500">
-                {Array.from({ length: t.rating }).map((_, k) => (
+                {Array.from({ length: t.rating || 5 }).map((_, k) => (
                   <Star key={k} className="h-4 w-4 fill-current" />
                 ))}
               </div>
@@ -28,10 +32,16 @@ export function Testimonials() {
               </blockquote>
               <figcaption className="mt-6 flex items-center gap-3">
                 {t.image ? (
-                  <img src={t.image} alt={t.name} className="h-10 w-10 rounded-full object-cover" loading="lazy" />
+                  <img 
+                    src={t.image || undefined} 
+                    alt={t.name} 
+                    className="h-10 w-10 rounded-full object-cover" 
+                    loading="lazy" 
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
                 ) : (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-sm font-semibold text-brand">
-                    {t.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
+                    {(t.name || "A").split(" ").map((s) => s[0]).join("").slice(0, 2)}
                   </div>
                 )}
                 <div>

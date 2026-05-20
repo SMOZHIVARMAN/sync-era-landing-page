@@ -4,21 +4,27 @@ import { ArrowUpRight, Calendar, Github, Globe } from "lucide-react";
 import * as Icons from "lucide-react";
 import { useSheet } from "@/hooks/useSheet";
 import { transformProjects, transformStats } from "@/services/transformData";
-import { fbProjects, fbStats } from "@/data/fallbacks";
 import { SectionHeader } from "./Services";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 export function Projects() {
-  const { data } = useSheet("projects", transformProjects, fbProjects);
+  const { data: raw, loading } = useSheet("projects");
+  const data = transformProjects(raw);
+
+  if (loading) return <div className="min-h-[400px]" />;
+  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
+
   return (
     <section id="work" className="relative py-24 md:py-32 bg-surface">
       <div className="container-prose">
         <SectionHeader kicker="Selected work" title="Engagements with measurable lift" subtitle="A small set of recent partnerships across fintech, healthcare, logistics and SaaS." />
         <div className="mt-14 grid gap-6 md:grid-cols-6">
-          {data.map((p, i) => (
+          {data.map((p) => (
             <article key={p.id} className={`group relative overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-shadow hover:shadow-elev ${p.featured ? "md:col-span-4 md:row-span-2" : "md:col-span-2"}`}>
               <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-                {p.image ? (
-                  <img src={p.image} alt={p.title} loading="lazy"
+                {p.gallery && p.gallery[0] ? (
+                  <img src={p.gallery[0] || undefined} alt={p.title} loading="lazy"
+                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                        className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:blur-sm" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand/10 to-success/10">
@@ -52,7 +58,7 @@ export function Projects() {
                   {p.title}
                   <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
                 </h3>
-                {p.technologies.length > 0 && (
+                {p.technologies && p.technologies.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {p.technologies.slice(0, 5).map((t) => (
                       <span key={t} className="rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{t}</span>
@@ -90,7 +96,10 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 }
 
 function Stats() {
-  const { data } = useSheet("stats", transformStats, fbStats);
+  const { data: raw, loading } = useSheet("stats");
+  const data = transformStats(raw);
+  if (loading || !raw.length || !data.length) return null;
+
   return (
     <div className="mt-20 grid gap-4 rounded-3xl border border-border bg-card p-6 shadow-card md:grid-cols-4 md:p-8">
       {data.map((s, i) => {
@@ -101,7 +110,7 @@ function Stats() {
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
               <C className="h-5 w-5" />
             </div>
-            <div className="font-display text-4xl font-bold tracking-tight text-ink"><Counter value={s.value} suffix={s.suffix} /></div>
+            <div className="font-display text-4xl font-bold tracking-tight text-ink"><Counter value={s.value || 0} suffix={s.suffix || ""} /></div>
             <div className="text-sm text-muted-foreground">{s.label}</div>
           </motion.div>
         );

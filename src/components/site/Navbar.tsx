@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useSheet } from "@/hooks/useSheet";
+import { transformSettings } from "@/services/transformData";
 
 const links = [
   { href: "#services", label: "Services" },
@@ -11,8 +13,11 @@ const links = [
 ];
 
 export function Navbar() {
+  const { data: raw } = useSheet("Site_setting");
+  const settings = transformSettings(raw);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
@@ -20,13 +25,20 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const logoUrl = settings?.logo_url;
+  const companyName = settings?.company_name || "Coming Soon";
+
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all ${scrolled ? "py-2" : "py-4"}`}>
       <div className="container-prose">
         <nav className={`flex items-center justify-between rounded-2xl px-4 py-3 transition-all ${scrolled ? "glass shadow-card" : "bg-transparent"}`}>
           <Link to="/" className="flex items-center gap-2.5">
-            <LogoMark className="h-7 w-7" />
-            <span className="font-display text-lg font-bold tracking-tight text-ink">Syncera</span>
+            {logoUrl ? (
+              <img src={logoUrl || undefined} alt={companyName} className="h-7 w-auto" onError={(e) => e.currentTarget.style.display='none'} />
+            ) : (
+              <LogoMark className="h-7 w-7" />
+            )}
+            <span className="font-display text-lg font-bold tracking-tight text-ink">{companyName}</span>
           </Link>
           <div className="hidden items-center gap-8 md:flex">
             {links.map((l) => (

@@ -1,12 +1,16 @@
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { Github, Linkedin, Twitter, Instagram } from "lucide-react";
 import { useSheet } from "@/hooks/useSheet";
 import { transformTeam } from "@/services/transformData";
-import { fbTeam } from "@/data/fallbacks";
 import { SectionHeader } from "./Services";
+import { SectionSkeleton } from "../ui/section-skeleton";
 
 export function Team() {
-  const { data } = useSheet("team", transformTeam, fbTeam);
-  if (!data.length) return null;
+  const { data: raw, loading } = useSheet("team");
+  const data = transformTeam(raw);
+
+  if (loading) return <div className="min-h-[400px]" />;
+  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
+
   return (
     <section id="team" className="relative py-24 md:py-32 bg-surface">
       <div className="container-prose">
@@ -16,17 +20,23 @@ export function Team() {
             <article key={i} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all hover:-translate-y-1 hover:shadow-elev">
               <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-brand/10 to-success/10">
                 {m.image ? (
-                  <img src={m.image} alt={m.name} loading="lazy"
-                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img 
+                    src={m.image || undefined} 
+                    alt={m.name} 
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                  />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center font-display text-5xl font-bold text-ink/25">
-                    {m.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
+                    {(m.name || "T").split(" ").map((s) => s[0]).join("").slice(0, 2)}
                   </div>
                 )}
                 <div className="absolute inset-x-0 bottom-0 flex translate-y-2 gap-2 bg-gradient-to-t from-foreground/70 to-transparent p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                   {m.linkedin && <a href={m.linkedin} className="rounded-md bg-background/95 p-2 text-foreground"><Linkedin className="h-4 w-4" /></a>}
                   {m.twitter && <a href={m.twitter} className="rounded-md bg-background/95 p-2 text-foreground"><Twitter className="h-4 w-4" /></a>}
                   {m.github && <a href={m.github} className="rounded-md bg-background/95 p-2 text-foreground"><Github className="h-4 w-4" /></a>}
+                  {m.instagram && <a href={m.instagram} className="rounded-md bg-background/95 p-2 text-foreground"><Instagram className="h-4 w-4" /></a>}
                 </div>
               </div>
               <div className="p-5">
