@@ -67,7 +67,7 @@ export function Hero() {
         <img 
           src={blueArrowAsset} 
           alt="" 
-          className="absolute -left-[22%] -bottom-[15%] w-[165%] max-w-[2400px] h-auto opacity-[0.55] object-contain origin-bottom-left brightness-95 saturate-[1.2] mix-blend-multiply transition-all duration-700" 
+          className="absolute -left-[22%] -bottom-[25%] w-[165%] max-w-[2400px] h-auto opacity-[0.75] object-contain origin-bottom-left brightness-95 saturate-[1.2] mix-blend-multiply transition-all duration-700" 
         />
       </div>
 
