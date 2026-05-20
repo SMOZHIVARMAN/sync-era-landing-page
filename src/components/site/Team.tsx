@@ -32,7 +32,7 @@ export function Team() {
                     {(m.name || "T").split(" ").map((s) => s[0]).join("").slice(0, 2)}
                   </div>
                 )}
-                <div className="absolute inset-x-0 bottom-0 flex translate-y-2 gap-2 bg-gradient-to-t from-foreground/70 to-transparent p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                <div className="absolute inset-x-0 bottom-0 flex gap-2 bg-gradient-to-t from-foreground/70 to-transparent p-4 transition-all duration-300 opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 md:group-hover:translate-y-0 md:group-hover:opacity-100">
                   {m.linkedin && <a href={m.linkedin} className="rounded-md bg-background/95 p-2 text-foreground"><Linkedin className="h-4 w-4" /></a>}
                   {m.twitter && <a href={m.twitter} className="rounded-md bg-background/95 p-2 text-foreground"><Twitter className="h-4 w-4" /></a>}
                   {m.github && <a href={m.github} className="rounded-md bg-background/95 p-2 text-foreground"><Github className="h-4 w-4" /></a>}

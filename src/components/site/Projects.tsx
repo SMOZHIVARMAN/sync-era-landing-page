@@ -54,7 +54,7 @@ export function Projects() {
                   )}
 
                   {/* Hover Reveal: Full Description */}
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-foreground/60 p-8 opacity-0 backdrop-blur-md transition-opacity duration-500 group-hover:opacity-100">
+                  <div className="absolute inset-0 z-10 hidden md:flex flex-col items-center justify-center bg-foreground/60 p-8 opacity-0 backdrop-blur-md transition-opacity duration-500 group-hover:opacity-100">
                     <p className="text-center text-sm leading-relaxed text-background/90">
                       {p.fullDescription || p.description}
                     </p>
@@ -108,9 +108,15 @@ export function Projects() {
 
                   {/* Middle Area: Short Desc + Date */}
                   <div className="mt-6 flex items-baseline justify-between gap-4">
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {p.description}
-                    </p>
+                    <div className="flex-1">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {p.description}
+                      </p>
+                      {/* Mobile Only: Full Description */}
+                      <p className="mt-4 block text-sm leading-relaxed text-muted-foreground md:hidden">
+                        {p.fullDescription || p.description}
+                      </p>
+                    </div>
                     {p.date && (
                       <span className="shrink-0 text-[11px] font-medium text-muted-foreground/60 uppercase">
                         {p.date}
