@@ -203,14 +203,16 @@ export const transformSocial = (rows: any[] = []): SocialLink[] => {
   }));
 };
 
-export type ProcessStep = { title: string; description: string; icon: string; order: number };
+export type ProcessStep = { id: string; title: string; description: string; icon: string; order: number };
 export const transformProcess = (rows: any[] = []): ProcessStep[] => {
   if (!Array.isArray(rows)) return [];
-  return sorted(rows).map((r) => ({
-    title: pick(r, "title"),
-    description: pick(r, "description"),
+  // Use active() to filter and sorted() to order by the 'order' column
+  return sorted(active(rows)).map((r, i) => ({
+    id: pick(r, "id") || String(i + 1),
+    title: pick(r, "title") || "Step",
+    description: pick(r, "description") || "",
     icon: normalizeIcon(pick(r, "icon")),
-    order: Number(pick(r, "order")) || 0,
+    order: Number(pick(r, "order")) || i + 1,
   }));
 };
 
