@@ -4,6 +4,7 @@ import { useSheet } from "@/hooks/useSheet";
 import { transformHero, transformClients } from "@/services/transformData";
 import { LogoMark } from "./Navbar";
 import { SectionSkeleton } from "../ui/section-skeleton";
+import arrowAsset from "@/assets/arrow.png";
 
 export function Hero() {
   const { data: raw, loading } = useSheet("hero");
@@ -24,18 +25,68 @@ export function Hero() {
   };
   const reset = () => { x.set(0); y.set(0); };
 
-  if (loading) return <div className="min-h-[600px]" />;
+  if (loading) return <div className="h-[100vh] flex items-center justify-center"><span className="animate-pulse text-muted-foreground font-medium">Syncing...</span></div>;
   if (!raw.length || !data?.heading) return <SectionSkeleton title="Coming Soon" />;
 
-  return (
-    <section className="relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32">
-      <div aria-hidden className="absolute inset-0 grid-bg" />
-      <div aria-hidden className="absolute -top-32 right-[-10%] h-[520px] w-[520px] rounded-full bg-brand/10 blur-3xl" />
-      <div aria-hidden className="absolute -bottom-40 left-[-10%] h-[420px] w-[420px] rounded-full bg-success/10 blur-3xl" />
+  const renderHeading = (text: string) => {
+    if (!text) return null;
+    const words = text.split(" ");
+    return words.map((word, i) => {
+      let colorClass = "text-ink";
+      let cleanWord = word;
+      
+      // Last two words = blue
+      if (i >= words.length - 2) {
+        colorClass = "text-brand-soft";
+      } 
+      // Highlighted words in {word}
+      else if (word.startsWith("{") && word.endsWith("}")) {
+        colorClass = "text-brand";
+        cleanWord = word.slice(1, -1);
+      }
+      
+      return (
+        <span key={i} className={colorClass}>
+          {cleanWord}{" "}
+        </span>
+      );
+    });
+  };
 
-      <div className="container-prose relative grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+  return (
+    <section className="relative h-[100vh] min-h-[700px] flex flex-col justify-center overflow-hidden">
+      {/* 0. Background Wash (z-0) - Enhanced bluish atmosphere */}
+      <div aria-hidden className="absolute inset-0 bg-white z-0" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_0%_100%,rgba(37,99,235,0.18),transparent_50%),radial-gradient(circle_at_100%_50%,rgba(37,99,235,0.12),transparent_60%)] z-0" />
+
+      {/* 1. Background Grid (z-[1]) */}
+      <div aria-hidden className="absolute inset-0 grid-bg opacity-50 z-[1]" />
+
+      {/* 2. Large Decorative Arrow (z-[2]) - Higher visibility, extended trajectory */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none select-none z-[2]">
+        <img 
+          src={arrowAsset} 
+          alt="" 
+          className="absolute -left-[10%] -bottom-[5%] w-[110%] max-w-[1600px] h-auto opacity-[0.45] object-contain origin-bottom-left brightness-90 saturate-[1.3] mix-blend-multiply transition-all duration-700" 
+          style={{ 
+            filter: "drop-shadow(0 0 30px rgba(37,99,235,0.15))"
+          }}
+        />
+      </div>
+
+      {/* 3. Hero Glow Effects (z-[3]) */}
+      <div aria-hidden className="absolute -top-32 right-[-10%] h-[520px] w-[520px] rounded-full bg-brand/15 blur-3xl z-[3]" />
+      <div aria-hidden className="absolute -bottom-40 left-[-10%] h-[420px] w-[420px] rounded-full bg-success/15 blur-3xl z-[3]" />
+
+      <div className="container-prose relative z-10 grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+        {/* 4. Hero Content (Text Side) */}
         <div>
-          {data?.badge && (
+          {data?.badge_image ? (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+              className="mb-6">
+              <img src={data.badge_image} alt="Badge" className="h-8 w-auto object-contain" onError={(e) => e.currentTarget.style.display='none'} />
+            </motion.div>
+          ) : data?.badge && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-soft backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-brand" />
@@ -44,8 +95,8 @@ export function Hero() {
           )}
 
           <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.05 }}
-            className="mt-6 text-balance font-display text-5xl font-bold leading-[1.05] tracking-tight text-ink md:text-6xl lg:text-7xl">
-            {data?.heading}
+            className="mt-6 text-balance font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+            {renderHeading(data.heading)}
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
@@ -69,48 +120,46 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* 3D Logo Showcase or Hero Image */}
+        {/* 5. Hero Image Card (Visual Side) */}
         <div className="relative mx-auto w-full max-w-md" style={{ perspective: 1400 }}>
-          {data?.image ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="relative aspect-square w-full overflow-hidden rounded-[2rem] border border-border bg-card shadow-elev"
-            >
-              <img 
-                src={data.image || undefined} 
-                alt="" 
-                className="h-full w-full object-cover" 
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              onMouseMove={handleMove}
-              onMouseLeave={reset}
-              style={{ rotateX: rotateX || 0, rotateY: rotateY || 0, transformStyle: "preserve-3d" }}
-              className="relative aspect-square w-full rounded-[2rem] border border-border bg-gradient-to-br from-white via-surface to-surface-2 shadow-elev"
-            >
-              <div aria-hidden className="absolute inset-6 rounded-[1.5rem] border border-border/60" />
-              <div aria-hidden className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.10),transparent_55%)]" />
+          <motion.div
+            onMouseMove={handleMove}
+            onMouseLeave={reset}
+            style={{ rotateX: rotateX || 0, rotateY: rotateY || 0, transformStyle: "preserve-3d" }}
+            className="relative aspect-square w-full rounded-[2rem] border border-border bg-gradient-to-br from-white via-surface to-surface-2 shadow-elev overflow-hidden"
+          >
+            {data?.image ? (
+              <div style={{ transform: "translateZ(0px)" }} className="absolute inset-0">
+                <img 
+                  src={data.image || undefined} 
+                  alt="" 
+                  className="h-full w-full object-cover" 
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              </div>
+            ) : (
+              <>
+                <div aria-hidden className="absolute inset-6 rounded-[1.5rem] border border-border/60" />
+                <div aria-hidden className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.10),transparent_55%)]" />
 
-              <motion.div
-                style={{ transformStyle: "preserve-3d", translateZ: 60 }}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <motion.div animate={{ y: [-8, 8, -8] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-                  <LogoMark className="h-44 w-44 drop-shadow-[0_20px_30px_rgba(37,99,235,0.25)]" />
+                <motion.div
+                  style={{ transformStyle: "preserve-3d", translateZ: 60 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <motion.div animate={{ y: [-8, 8, -8] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
+                    <LogoMark className="h-44 w-44 drop-shadow-[0_20px_30px_rgba(37,99,235,0.25)]" />
+                  </motion.div>
                 </motion.div>
-              </motion.div>
+              </>
+            )}
 
-              <div style={{ transform: "translateZ(40px)" }} className="absolute left-6 top-6 rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-soft backdrop-blur">
-                SYNCERA · v9
-              </div>
-              <div style={{ transform: "translateZ(40px)" }} className="absolute bottom-6 right-6 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-soft backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full bg-success" /> Live build
-              </div>
-            </motion.div>
-          )}
+            <div style={{ transform: "translateZ(40px)" }} className="absolute left-6 top-6 rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-soft backdrop-blur">
+              SYNCERA · v9
+            </div>
+            <div style={{ transform: "translateZ(40px)" }} className="absolute bottom-6 right-6 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-soft backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" /> Live build
+            </div>
+          </motion.div>
           <div aria-hidden className="mx-auto mt-6 h-8 w-2/3 rounded-[100%] bg-foreground/10 blur-xl" />
         </div>
       </div>
@@ -130,7 +179,7 @@ function ClientStrip() {
   const duplicatedData = [...data, ...data];
 
   return (
-    <div className="container-prose mt-20">
+    <div className="container-prose mt-20 relative z-10">
       <p className="text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
         Trusted by teams at
       </p>

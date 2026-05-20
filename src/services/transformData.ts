@@ -56,14 +56,20 @@ export const transformSettings = (rows: any[] = []) => {
 };
 
 export type HeroData = {
-  badge: string; heading: string; subheading: string;
-  ctaPrimary: string; ctaSecondary: string; image: string;
+  badge: string; 
+  badge_image: string;
+  heading: string; 
+  subheading: string;
+  ctaPrimary: string; 
+  ctaSecondary: string; 
+  image: string;
 };
 export const transformHero = (rows: any[] = []): HeroData => {
   if (!Array.isArray(rows)) return {} as any;
   const r = active(rows)[0] ?? {};
   return {
     badge: pick(r, "badge_text", "badge"),
+    badge_image: pick(r, "badge_image"),
     heading: pick(r, "heading", "title"),
     subheading: pick(r, "subheading", "subtitle"),
     ctaPrimary: pick(r, "cta_primary"),
@@ -115,11 +121,11 @@ export const transformProjects = (rows: any[] = []): ProjectItem[] => {
 
 export type TestimonialItem = {
   id: string;
-  clientName: string;
+  client_name: string;
   company: string;
   role: string;
   review: string;
-  profileImage: string;
+  profile_image: string;
   rating: number;
   featured: boolean;
   status: string;
@@ -128,25 +134,20 @@ export type TestimonialItem = {
 export const transformTestimonials = (rows: any[] = []): TestimonialItem[] => {
   if (!Array.isArray(rows)) return [];
   
-  return active(rows).map((r, i) => {
-    // Phase 3 — Audit Filters / Normalization
-    const rawFeatured = pick(r, "featured", "is_featured", "highlight");
-    const isFeatured = ["true", "1", "yes", "featured"].includes(String(rawFeatured).toLowerCase().trim());
-    
-    const rawStatus = pick(r, "status", "active") || "active";
-    const statusNormalized = rawStatus.toLowerCase().trim() === "active" ? "active" : rawStatus.toLowerCase().trim();
-
-    return {
-      id: pick(r, "id") || String(i + 1),
-      clientName: pick(r, "client_name", "name") || "Anonymous",
-      company: pick(r, "company", "company_name") || "",
-      role: pick(r, "role", "client_role") || "",
-      review: pick(r, "review", "testimonial") || "No review provided",
-      profileImage: pick(r, "profile_image", "image", "image_url") || "",
-      rating: Number(pick(r, "rating")) || 5,
-      featured: isFeatured,
-      status: statusNormalized,
-    };
+  return rows.map((r, i) => ({
+    id: pick(r, "id") || String(i + 1),
+    client_name: pick(r, "client_name", "clientName", "name", "client") || "",
+    company: pick(r, "company", "organization") || "",
+    role: pick(r, "role", "position", "title") || "",
+    review: pick(r, "review", "message", "feedback", "content") || "",
+    profile_image: pick(r, "profile_image", "profileImage", "image", "avatar", "photo") || "",
+    rating: Number(pick(r, "rating")) || 5,
+    featured: bool(pick(r, "featured")),
+    status: pick(r, "status") || "active"
+  })).filter(item => {
+    const status = String(item.status).toLowerCase().trim();
+    // featured is already a boolean from bool()
+    return (status === "active" || status === "1" || status === "true" || status === "yes") && item.featured;
   });
 };
 
@@ -229,9 +230,9 @@ export const transformProcess = (rows: any[] = []): ProcessStep[] => {
   // Use active() to filter and sorted() to order by the 'order' column
   return sorted(active(rows)).map((r, i) => ({
     id: pick(r, "id") || String(i + 1),
-    title: pick(r, "title") || "Step",
-    description: pick(r, "description") || "",
-    icon: normalizeIcon(pick(r, "icon")),
+    title: pick(r, "title", "step_title", "name") || "Step",
+    description: pick(r, "description", "desc", "content", "info", "text", "short_description") || "",
+    icon: pick(r, "icon", "image", "icon_url") || "",
     order: Number(pick(r, "order")) || i + 1,
   }));
 };

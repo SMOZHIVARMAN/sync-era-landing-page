@@ -58,16 +58,15 @@ export function Process() {
         />
 
         <div className="relative mt-24">
-          {/* Central Vertical Line (Base) */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border/40 -translate-x-1/2 hidden md:block" />
+          {/* Active Blue Progress Line - Spans the entire container and connects icons */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 bg-brand/20 z-0" />
           
-          {/* Animated Progress Line */}
           <motion.div 
             style={{ 
               scaleY: scrollYProgress,
               originY: 0
             }}
-            className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-brand -translate-x-1/2 hidden md:block"
+            className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-brand -translate-x-1/2 z-[1]"
           />
 
           <div className="space-y-16 md:space-y-24 relative">
@@ -76,15 +75,15 @@ export function Process() {
               const stepId = item.id || index;
               const stepTitle = item.title || "Step";
               const stepDesc = item.description || "";
-              const stepIcon = String(item.icon || item.id || index).slice(0, 2);
+              const stepIcon = item.icon || "";
 
               return (
                 <div 
                   key={stepId} 
-                  className={`flex flex-col md:flex-row items-center justify-between ${isEven ? '' : 'md:flex-row-reverse'}`}
+                  className={`flex flex-col md:flex-row items-center justify-between relative ${isEven ? '' : 'md:flex-row-reverse'}`}
                 >
                   {/* Card Side */}
-                  <div className="w-full md:w-[42%]">
+                  <div className="w-full md:w-[42%] relative z-10">
                     <motion.div
                       initial={{ 
                         x: isEven ? -150 : 150, 
@@ -112,7 +111,7 @@ export function Process() {
                         </span>
                         <div className="h-10 w-10 rounded-xl bg-brand/5 flex items-center justify-center text-brand">
                           <span className="text-xs font-bold uppercase">
-                            {stepIcon}
+                            {String(index + 1).padStart(2, "0")}
                           </span>
                         </div>
                       </div>
@@ -121,15 +120,28 @@ export function Process() {
                         {stepTitle}
                       </h3>
 
-                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                        {stepDesc}
-                      </p>
+                      {stepDesc && (
+                        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                          {stepDesc}
+                        </p>
+                      )}
                     </motion.div>
                   </div>
 
-                  {/* Center Progress Dot */}
-                  <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white font-bold relative z-10 my-8 md:my-0 shadow-[0_0_0_8px_rgba(255,255,255,1)]">
-                    <span className="text-[10px]">{index + 1}</span>
+                  {/* Center Icon Dot */}
+                  <div className="relative z-20 h-14 w-14 rounded-full bg-white shadow-card border flex items-center justify-center overflow-hidden my-8 md:my-0 shadow-[0_0_0_8px_rgba(255,255,255,1)]">
+                    {stepIcon ? (
+                      <img
+                        src={stepIcon}
+                        alt={stepTitle}
+                        className="w-8 h-8 object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <span className="text-xs font-bold text-brand">{index + 1}</span>
+                    )}
                   </div>
 
                   {/* Empty Side (Desktop Only) */}

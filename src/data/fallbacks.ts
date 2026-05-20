@@ -30,10 +30,10 @@ export const fbProjects: ProjectItem[] = [
 ];
 
 export const fbTestimonials: TestimonialItem[] = [
-  { name: "Avery Okafor", company: "Northwind", role: "VP Engineering", review: "Syncera operates like an extension of our staff team — sharp, calm, and consistently shipping.", image: "", rating: 5 },
-  { name: "Maya Brennan", company: "Helio", role: "Chief Product Officer", review: "They reframed our roadmap and shipped a portal our patients actually love.", image: "", rating: 5 },
-  { name: "Daniel Park", company: "Atlas Logistics", role: "Head of Ops", review: "Hands down the most technically rigorous partner we've worked with.", image: "", rating: 5 },
-  { name: "Sara Lehmann", company: "Form Studio", role: "Founder & CEO", review: "Strategy, design, engineering — every surface felt considered.", image: "", rating: 5 },
+  { id: "1", client_name: "Avery Okafor", company: "Northwind", role: "VP Engineering", review: "Syncera operates like an extension of our staff team — sharp, calm, and consistently shipping.", profile_image: "", rating: 5, featured: true, status: "Active" },
+  { id: "2", client_name: "Maya Brennan", company: "Helio", role: "Chief Product Officer", review: "They reframed our roadmap and shipped a portal our patients actually love.", profile_image: "", rating: 5, featured: false, status: "Active" },
+  { id: "3", client_name: "Daniel Park", company: "Atlas Logistics", role: "Head of Ops", review: "Hands down the most technically rigorous partner we've worked with.", profile_image: "", rating: 5, featured: false, status: "Active" },
+  { id: "4", client_name: "Sara Lehmann", company: "Form Studio", role: "Founder & CEO", review: "Strategy, design, engineering — every surface felt considered.", profile_image: "", rating: 5, featured: false, status: "Active" },
 ];
 
 export const fbTeam: TeamMember[] = [
