@@ -89,7 +89,7 @@ export const transformServices = (rows: any[] = []): ServiceItem[] => {
     title: pick(r, "title"),
     description: pick(r, "short_description", "description"),
     longDescription: pick(r, "long_description"),
-    icon: normalizeIcon(pick(r, "icon")),
+    icon: pick(r, "icon"),
     image: pick(r, "image_url", "image"),
     featured: bool(pick(r, "featured")),
   }));

@@ -5,11 +5,6 @@ import { useSheet } from "@/hooks/useSheet";
 import { transformServices } from "@/services/transformData";
 import { SectionSkeleton } from "../ui/section-skeleton";
 
-function Icon({ name, className }: { name: string; className?: string }) {
-  const C = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name] ?? Icons.Sparkles;
-  return <C className={className} />;
-}
-
 export function SectionHeader({ kicker, title, subtitle }: { kicker: string; title: string; subtitle?: string }) {
   return (
     <div className="mx-auto max-w-2xl text-center">
@@ -19,6 +14,8 @@ export function SectionHeader({ kicker, title, subtitle }: { kicker: string; tit
     </div>
   );
 }
+
+const FALLBACK_ICON = "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/sparkles.svg";
 
 export function Services() {
   const { data: raw, loading } = useSheet("services");
@@ -61,7 +58,16 @@ export function Services() {
                     )}
                     <div className="relative" style={{ transform: "translateZ(20px)" }}>
                       <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand/10 text-brand">
-                        <Icon name={s.icon} className="h-5 w-5" />
+                        <img 
+                          src={s.icon || FALLBACK_ICON} 
+                          alt="" 
+                          className="h-5 w-5 object-contain transition-all"
+                          style={{ filter: "brightness(0) saturate(100%) invert(43%) sepia(91%) saturate(3042%) hue-rotate(204deg) brightness(96%) contrast(92%)" }}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.src = FALLBACK_ICON;
+                          }}
+                        />
                       </div>
                       <h3 className="mt-5 font-display text-xl font-semibold text-ink">{s.title}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.description}</p>
