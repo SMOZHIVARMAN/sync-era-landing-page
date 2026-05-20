@@ -9,7 +9,6 @@ import blueArrowAsset from "@/assets/blue_arrow.png";
 export function Hero() {
   const { data: raw, loading } = useSheet("hero");
   const data = transformHero(raw);
-  console.log("Transformed Hero:", data);
 
   // 3D tilt
   const x = useMotionValue(0); const y = useMotionValue(0);

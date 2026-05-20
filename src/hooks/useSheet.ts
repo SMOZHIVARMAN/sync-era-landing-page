@@ -13,7 +13,6 @@ export function useSheet(sheetName: string) {
       try {
         setLoading(true);
         const result = await fetchSheet(sheetName);
-        console.log("Sheet:", sheetName, result);
         if (!cancelled) {
           setData(Array.isArray(result) ? result : []);
         }

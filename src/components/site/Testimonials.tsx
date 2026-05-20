@@ -25,8 +25,6 @@ export function Testimonials() {
       <div className="group mt-14 overflow-hidden mask-fade-x">
         <div className="flex w-max animate-marquee-l gap-5 group-hover:[animation-play-state:paused]">
           {doubled.map((t, i) => {
-            console.log("ITEM:", t);
-
             return (
               <figure key={i} className="w-[360px] shrink-0 rounded-2xl border border-border bg-card p-7 shadow-soft transition-all hover:-translate-y-1 hover:shadow-card">
                 {/* Dynamic Stars */}

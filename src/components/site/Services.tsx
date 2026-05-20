@@ -20,7 +20,6 @@ const FALLBACK_ICON = "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/s
 export function Services() {
   const { data: raw, loading } = useSheet("services");
   const data = transformServices(raw);
-  console.log("Transformed Services:", data);
   const [flipped, setFlipped] = useState<string | null>(null);
 
   if (loading) return <div className="min-h-[400px]" />;

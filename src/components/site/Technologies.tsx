@@ -10,13 +10,20 @@ export function Technologies() {
   if (loading) return <div className="min-h-[400px]" />;
   if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
 
-  // chunk into 3 rows of 6
-  const perRow = 6;
+  // Dynamic row generation: each row must have exactly 8 items
+  const perRow = 8;
+  const numRows = Math.ceil(data.length / perRow);
   const rows: typeof data[] = [];
-  for (let i = 0; i < 3; i++) {
-    const start = (i * perRow) % data.length;
-    const row = [...data.slice(start), ...data.slice(0, start)].slice(0, perRow);
-    while (row.length < perRow) row.push(...data.slice(0, perRow - row.length));
+  
+  for (let i = 0; i < numRows; i++) {
+    const start = i * perRow;
+    const chunk = data.slice(start, start + perRow);
+    
+    // Fill to exactly 8 items by wrapping from the start of the data
+    const row = [...chunk];
+    while (row.length < perRow && data.length > 0) {
+      row.push(...data.slice(0, perRow - row.length));
+    }
     rows.push(row);
   }
 
