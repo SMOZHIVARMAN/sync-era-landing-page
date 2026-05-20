@@ -14,7 +14,7 @@ export function Team() {
   return (
     <section id="team" className="relative py-24 md:py-32 bg-surface">
       <div className="container-prose">
-        <SectionHeader kicker="The studio" title="A senior team you'd want on the inside" subtitle="Operators with decades of combined experience across product, design and engineering." />
+        <SectionHeader kicker="The studio" title="The minds behind Syncera" subtitle="Operators with decades of combined experience across product, design and engineering." />
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {data.map((m, i) => (
             <article key={i} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all hover:-translate-y-1 hover:shadow-elev">

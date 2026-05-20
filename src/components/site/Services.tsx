@@ -28,7 +28,7 @@ export function Services() {
   return (
     <section id="services" className="relative py-24 md:py-32">
       <div className="container-prose">
-        <SectionHeader kicker="What we do" title="Services built for the entire product lifecycle" subtitle="A unified team for strategy, design, engineering and growth — sequenced to compound outcomes." />
+        <SectionHeader kicker="What we do" title="Solutions designed for growth at every stage" subtitle="A unified team for strategy, design, engineering and growth — sequenced to compound outcomes." />
         <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data.map((s) => {
             const isFlipped = flipped === s.id;
@@ -87,7 +87,7 @@ export function Services() {
                       <h3 className="font-display text-xl font-semibold">{s.title}</h3>
                       <p className="mt-3 text-sm leading-relaxed text-background/80">{s.longDescription}</p>
                     </div>
-                    <a href="#contact" className="inline-flex items-center gap-1.5 text-xs font-semibold text-background/90 hover:text-background" style={{ transform: "translateZ(20px)" }}>
+                    <a href="#contact" className="inline-flex min-h-[44px] items-center gap-1.5 text-xs font-semibold text-background/90 hover:text-background" style={{ transform: "translateZ(20px)" }}>
                       Discuss this engagement <Icons.ArrowRight className="h-3.5 w-3.5" />
                     </a>
                   </div>

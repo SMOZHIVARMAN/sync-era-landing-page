@@ -211,16 +211,17 @@ export const transformFaq = (rows: any[] = []): FaqItem[] => {
   }));
 };
 
-export type ContactsData = Record<string, string>;
-export const transformContacts = (rows: any[] = []): ContactsData => {
-  const contacts: ContactsData = {};
-  if (!Array.isArray(rows)) return contacts;
-  rows.forEach((r) => {
-    const type = pick(r, "type");
-    const val = pick(r, "value");
-    if (type && val) contacts[type.toLowerCase()] = val;
-  });
-  return contacts;
+export type ContactItem = { type: string; value: string; icon: string; order: number };
+export const transformContacts = (rows: any[] = []): ContactItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((r) => ({
+    type: pick(r, "type"),
+    value: pick(r, "value"),
+    icon: pick(r, "icon"),
+    order: Number(pick(r, "order")) || 999
+  }))
+  .filter((i) => i.type && i.value)
+  .sort((a, b) => a.order - b.order);
 };
 
 export type SocialLink = { platform: string; url: string; icon: string };

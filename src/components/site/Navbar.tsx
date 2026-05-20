@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useSheet } from "@/hooks/useSheet";
 import { transformSettings } from "@/services/transformData";
+import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
   { href: "#services", label: "Services" },
@@ -25,14 +26,23 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Auto-close menu on resize if screen becomes large
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) setOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   const logoUrl = settings?.logo_url;
   const companyName = settings?.company_name || "Coming Soon";
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all ${scrolled ? "py-2" : "py-4"}`}>
       <div className="container-prose">
-        <nav className={`flex items-center justify-between rounded-2xl px-4 py-3 transition-all ${scrolled ? "glass shadow-card" : "bg-transparent"}`}>
-          <Link to="/" className="flex items-center gap-2.5">
+        <nav className={`flex items-center justify-between rounded-2xl px-4 py-3 transition-all ${scrolled || open ? "glass shadow-card" : "bg-transparent"}`}>
+          <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
             {logoUrl ? (
               <img src={logoUrl || undefined} alt={companyName} className="h-7 w-auto" onError={(e) => e.currentTarget.style.display='none'} />
             ) : (
@@ -40,6 +50,7 @@ export function Navbar() {
             )}
             <span className="font-display text-lg font-bold tracking-tight text-ink">{companyName}</span>
           </Link>
+          
           <div className="hidden items-center gap-8 md:flex">
             {links.map((l) => (
               <a key={l.href} href={l.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
@@ -47,25 +58,73 @@ export function Navbar() {
               </a>
             ))}
           </div>
+
           <div className="flex items-center gap-2">
             <a href="#contact" className="hidden rounded-xl bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-soft transition-transform hover:-translate-y-0.5 md:inline-block">
               Start a Project
             </a>
-            <button onClick={() => setOpen((o) => !o)} className="rounded-lg p-2 md:hidden" aria-label="Menu">
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <button 
+              onClick={() => setOpen((o) => !o)} 
+              className="relative h-10 w-10 rounded-lg p-2 text-ink transition-colors hover:bg-brand/5 md:hidden" 
+              aria-label="Toggle Menu"
+            >
+              <div className="relative h-full w-full">
+                <motion.div
+                  initial={false}
+                  animate={open ? { rotate: 45, y: 0 } : { rotate: 0, y: -6 }}
+                  className="absolute left-1 top-1/2 h-0.5 w-6 bg-current"
+                  transition={{ duration: 0.3 }}
+                />
+                <motion.div
+                  initial={false}
+                  animate={open ? { opacity: 0 } : { opacity: 1 }}
+                  className="absolute left-1 top-1/2 h-0.5 w-6 -translate-y-1/2 bg-current"
+                  transition={{ duration: 0.3 }}
+                />
+                <motion.div
+                  initial={false}
+                  animate={open ? { rotate: -45, y: 0 } : { rotate: 0, y: 6 }}
+                  className="absolute left-1 top-1/2 h-0.5 w-6 bg-current"
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
             </button>
           </div>
         </nav>
-        {open && (
-          <div className="mt-2 rounded-2xl bg-card p-4 shadow-card md:hidden">
-            <div className="flex flex-col gap-3">
-              {links.map((l) => (
-                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="text-sm font-medium text-foreground">{l.label}</a>
-              ))}
-              <a href="#contact" onClick={() => setOpen(false)} className="rounded-xl bg-foreground px-4 py-2 text-center text-sm font-semibold text-background">Start a Project</a>
-            </div>
-          </div>
-        )}
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, y: -20, height: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="mt-2 overflow-hidden rounded-2xl glass p-4 shadow-card md:hidden"
+            >
+              <div className="flex flex-col gap-4 py-2">
+                {links.map((l) => (
+                  <a 
+                    key={l.href} 
+                    href={l.href} 
+                    onClick={() => setOpen(false)} 
+                    className="px-2 text-base font-semibold tracking-tight text-ink transition-colors hover:text-brand"
+                  >
+                    {l.label}
+                  </a>
+                ))}
+                <div className="mt-2 border-t border-border pt-4">
+                  <a 
+                    href="#contact" 
+                    onClick={() => setOpen(false)} 
+                    className="flex h-12 w-full items-center justify-center rounded-xl bg-foreground text-sm font-bold text-background shadow-elev transition-active active:scale-95"
+                  >
+                    Start a Project
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

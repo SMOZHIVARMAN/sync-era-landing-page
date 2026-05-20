@@ -53,10 +53,10 @@ export function Hero() {
   };
 
   return (
-    <section className="relative h-[100vh] min-h-[700px] flex flex-col justify-center overflow-hidden">
-      {/* 0. Background Wash (z-0) - Subtle bluish atmosphere */}
+    <section className="relative h-auto min-h-screen flex flex-col justify-center overflow-hidden py-24 md:h-[100vh] md:min-h-[700px] md:py-0">
+      {/* 0. Background Wash (z-0) - Subtle bluish atmosphere anchored to corners */}
       <div aria-hidden className="absolute inset-0 bg-white z-0" />
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_10%_90%,rgba(37,99,235,0.22),transparent_50%),radial-gradient(circle_at_90%_50%,rgba(37,99,235,0.18),transparent_60%)] z-0" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_10%_90%,rgba(37,99,235,0.22),transparent_50%),radial-gradient(circle_at_95%_10%,rgba(37,99,235,0.18),transparent_60%)] z-0" />
 
       {/* 1. Background Grid (z-[1]) */}
       <div aria-hidden className="absolute inset-0 grid-bg opacity-50 z-[1]" />
@@ -77,12 +77,12 @@ export function Hero() {
       <div aria-hidden className="absolute -top-32 right-[-10%] h-[520px] w-[520px] rounded-full bg-brand/15 blur-3xl z-[3]" />
       <div aria-hidden className="absolute -bottom-40 left-[-10%] h-[420px] w-[420px] rounded-full bg-success/15 blur-3xl z-[3]" />
 
-      <div className="container-prose relative z-10 grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+      <div className="container-prose relative z-10 grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         {/* 4. Hero Content (Text Side) */}
-        <div>
+        <div className="text-center lg:text-left">
           {data?.badge_image ? (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-              className="mb-6">
+              className="mb-6 flex justify-center lg:justify-start">
               <img src={data.badge_image} alt="Badge" className="h-8 w-auto object-contain" onError={(e) => e.currentTarget.style.display='none'} />
             </motion.div>
           ) : data?.badge && (
@@ -94,25 +94,25 @@ export function Hero() {
           )}
 
           <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.05 }}
-            className="mt-6 text-balance font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+            className="mt-6 text-balance font-display text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
             {renderHeading(data.heading)}
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
-            className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
+            className="mt-6 mx-auto lg:mx-0 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
             {data?.subheading}
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.25 }}
-            className="mt-9 flex flex-wrap items-center gap-3">
+            className="mt-9 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             {data?.ctaPrimary && (
-              <a href="#contact" className="group inline-flex items-center gap-2 rounded-xl bg-foreground px-5 py-3 text-sm font-semibold text-background shadow-elev transition-transform hover:-translate-y-0.5">
+              <a href="#contact" className="group inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-foreground px-6 py-3 text-sm font-semibold text-background shadow-elev transition-transform hover:-translate-y-0.5">
                 {data.ctaPrimary}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
             )}
             {data?.ctaSecondary && (
-              <a href="#work" className="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-5 py-3 text-sm font-semibold text-foreground shadow-soft transition-colors hover:bg-secondary">
+              <a href="#work" className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-border bg-white px-6 py-3 text-sm font-semibold text-foreground shadow-soft transition-colors hover:bg-secondary">
                 {data.ctaSecondary}
               </a>
             )}
@@ -120,7 +120,7 @@ export function Hero() {
         </div>
 
         {/* 5. Hero Image Card (Visual Side) */}
-        <div className="relative mx-auto w-full max-w-md" style={{ perspective: 1400 }}>
+        <div className="relative mx-auto w-full max-w-sm lg:max-w-md" style={{ perspective: 1400 }}>
           <motion.div
             onMouseMove={handleMove}
             onMouseLeave={reset}
@@ -153,10 +153,10 @@ export function Hero() {
             )}
 
             <div style={{ transform: "translateZ(40px)" }} className="absolute left-6 top-6 rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-soft backdrop-blur">
-              SYNCERA · v9
+              SYNCERA 
             </div>
             <div style={{ transform: "translateZ(40px)" }} className="absolute bottom-6 right-6 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-soft backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" /> Live build
+              <span className="h-1.5 w-1.5 rounded-full bg-success" /> Live 
             </div>
           </motion.div>
           <div aria-hidden className="mx-auto mt-6 h-8 w-2/3 rounded-[100%] bg-foreground/10 blur-xl" />

@@ -23,7 +23,7 @@ export function Projects() {
         <div className="container-prose">
           <SectionHeader 
             kicker="Selected work" 
-            title="Engagements with measurable lift" 
+            title="Projects that deliver measurable impact" 
             subtitle="A small set of recent partnerships across fintech, healthcare, logistics and SaaS." 
           />
           

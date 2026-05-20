@@ -30,7 +30,7 @@ export function Technologies() {
   return (
     <section className="relative py-24 md:py-32">
       <div className="container-prose">
-        <SectionHeader kicker="Our stack" title="A modern, battle-tested toolchain" subtitle="We pick boring where it matters and bold where it pays — always tuned to your team's strengths." />
+        <SectionHeader kicker="Our stack" title="Technology chosen for speed and scale" subtitle="We pick boring where it matters and bold where it pays — always tuned to your team's strengths." />
       </div>
       <div className="mt-14 space-y-6 mask-fade-x">
         {rows.map((row, i) => (

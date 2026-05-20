@@ -95,14 +95,25 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  html { 
+    scroll-behavior: smooth; 
+    -webkit-font-smoothing: antialiased; 
+    -webkit-overflow-scrolling: touch;
+  }
   body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
     font-feature-settings: "cv02","cv03","cv04","ss01";
+    touch-action: manipulation;
   }
   h1,h2,h3,h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+}
+
+@media (max-width: 767px) {
+  .container-prose {
+    padding-inline: 1.25rem !important; /* 20px */
+  }
 }
 
 @layer utilities {

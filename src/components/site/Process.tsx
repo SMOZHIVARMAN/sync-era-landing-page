@@ -53,8 +53,8 @@ export function Process() {
           {/* Header */}
           <SectionHeader
             kicker="How we work"
-            title="A studio operating system, end to end"
-            subtitle="Six phases that turn ambiguity into momentum — with measurable outputs every step of the way."
+            title="A proven process from idea to impact"
+            subtitle="Five phases that turn ambiguity into momentum — with measurable outputs every step of the way."
           />
 
           <div className="relative mt-24">
