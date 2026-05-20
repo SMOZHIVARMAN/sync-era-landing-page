@@ -162,6 +162,8 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   return <span ref={ref}>{n}{suffix}</span>;
 }
 
+const STAT_FALLBACK = "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/sparkles.svg";
+
 function Stats() {
   const { data: raw, loading } = useSheet("stats");
   const data = transformStats(raw);
@@ -170,14 +172,24 @@ function Stats() {
   return (
     <div className="mt-20 grid gap-4 rounded-3xl border border-border bg-card p-6 shadow-card md:grid-cols-4 md:p-8">
       {data.map((s, i) => {
-        const C = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[s.icon] ?? Icons.Sparkles;
         return (
           <motion.div key={i} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}
             className="flex flex-col items-start gap-3 rounded-2xl px-4 py-5">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
-              <C className="h-5 w-5" />
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand/10 text-brand">
+              <img 
+                src={s.icon || STAT_FALLBACK} 
+                alt={s.label} 
+                className="h-7 w-7 object-contain"
+                style={{ filter: "brightness(0) saturate(100%) invert(43%) sepia(91%) saturate(3042%) hue-rotate(204deg) brightness(96%) contrast(92%)" }}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = STAT_FALLBACK;
+                }}
+              />
             </div>
-            <div className="font-display text-4xl font-bold tracking-tight text-ink"><Counter value={s.value || 0} suffix={s.suffix || ""} /></div>
+            <div className="font-display text-4xl font-bold tracking-tight text-ink">
+              <Counter value={s.value || 0} suffix={s.suffix || ""} />
+            </div>
             <div className="text-sm text-muted-foreground">{s.label}</div>
           </motion.div>
         );

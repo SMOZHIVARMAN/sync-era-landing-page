@@ -197,7 +197,7 @@ export const transformStats = (rows: any[] = []): StatItem[] => {
     label: pick(r, "title"),
     value: Number(pick(r, "value")) || 0,
     suffix: pick(r, "suffix") || "",
-    icon: normalizeIcon(pick(r, "icon")),
+    icon: pick(r, "icon") || "",
   }));
 };
 
