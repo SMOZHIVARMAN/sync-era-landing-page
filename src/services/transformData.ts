@@ -114,20 +114,40 @@ export const transformProjects = (rows: any[] = []): ProjectItem[] => {
 };
 
 export type TestimonialItem = {
-  name: string; company: string; role: string; review: string;
-  image: string; rating: number; featured: boolean;
+  id: string;
+  clientName: string;
+  company: string;
+  role: string;
+  review: string;
+  profileImage: string;
+  rating: number;
+  featured: boolean;
+  status: string;
 };
+
 export const transformTestimonials = (rows: any[] = []): TestimonialItem[] => {
   if (!Array.isArray(rows)) return [];
-  return active(rows).map((r) => ({
-    name: pick(r, "client_name", "name"),
-    company: pick(r, "company"),
-    role: pick(r, "role"),
-    review: pick(r, "review"),
-    image: pick(r, "profile_image", "image"),
-    rating: Number(pick(r, "rating")) || 5,
-    featured: bool(pick(r, "featured")),
-  }));
+  
+  return active(rows).map((r, i) => {
+    // Phase 3 — Audit Filters / Normalization
+    const rawFeatured = pick(r, "featured", "is_featured", "highlight");
+    const isFeatured = ["true", "1", "yes", "featured"].includes(String(rawFeatured).toLowerCase().trim());
+    
+    const rawStatus = pick(r, "status", "active") || "active";
+    const statusNormalized = rawStatus.toLowerCase().trim() === "active" ? "active" : rawStatus.toLowerCase().trim();
+
+    return {
+      id: pick(r, "id") || String(i + 1),
+      clientName: pick(r, "client_name", "name") || "Anonymous",
+      company: pick(r, "company", "company_name") || "",
+      role: pick(r, "role", "client_role") || "",
+      review: pick(r, "review", "testimonial") || "No review provided",
+      profileImage: pick(r, "profile_image", "image", "image_url") || "",
+      rating: Number(pick(r, "rating")) || 5,
+      featured: isFeatured,
+      status: statusNormalized,
+    };
+  });
 };
 
 export type TeamMember = {

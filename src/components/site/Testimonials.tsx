@@ -31,21 +31,21 @@ export function Testimonials() {
                 "{t.review}"
               </blockquote>
               <figcaption className="mt-6 flex items-center gap-3">
-                {t.image ? (
+                {t.profileImage ? (
                   <img 
-                    src={t.image || undefined} 
-                    alt={t.name} 
+                    src={t.profileImage || undefined} 
+                    alt={t.clientName} 
                     className="h-10 w-10 rounded-full object-cover" 
                     loading="lazy" 
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 ) : (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-sm font-semibold text-brand">
-                    {(t.name || "A").split(" ").map((s) => s[0]).join("").slice(0, 2)}
+                    {(t.clientName || "A").split(" ").map((s) => s[0]).join("").slice(0, 2)}
                   </div>
                 )}
                 <div>
-                  <div className="text-sm font-semibold text-ink">{t.name}</div>
+                  <div className="text-sm font-semibold text-ink">{t.clientName}</div>
                   <div className="text-xs text-muted-foreground">{t.role}{t.company ? ` · ${t.company}` : ""}</div>
                 </div>
               </figcaption>
