@@ -11,67 +11,134 @@ export function Projects() {
   const { data: raw, loading } = useSheet("projects");
   const data = transformProjects(raw);
 
-  if (loading) return <div className="min-h-[400px]" />;
-  if (!raw.length || !data.length) return <SectionSkeleton title="Coming Soon" />;
-
   return (
-    <section id="work" className="relative py-24 md:py-32 bg-surface">
-      <div className="container-prose">
-        <SectionHeader kicker="Selected work" title="Engagements with measurable lift" subtitle="A small set of recent partnerships across fintech, healthcare, logistics and SaaS." />
-        <div className="mt-14 grid gap-6 md:grid-cols-6">
-          {data.map((p) => (
-            <article key={p.id} className={`group relative overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-shadow hover:shadow-elev ${p.featured ? "md:col-span-4 md:row-span-2" : "md:col-span-2"}`}>
-              <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-                {p.gallery && p.gallery[0] ? (
-                  <img src={p.gallery[0] || undefined} alt={p.title} loading="lazy"
-                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                       className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:blur-sm" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand/10 to-success/10">
-                    <span className="font-display text-3xl font-bold text-ink/30">{p.title}</span>
-                  </div>
-                )}
-                <div className="absolute inset-0 flex flex-col justify-end gap-3 bg-gradient-to-t from-foreground/85 via-foreground/40 to-transparent p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  <p className="translate-y-2 text-sm leading-relaxed text-background transition-transform duration-300 group-hover:translate-y-0">
-                    {p.description}
-                  </p>
-                  <div className="flex translate-y-2 gap-2 transition-transform duration-300 group-hover:translate-y-0">
-                    {p.liveUrl && (
-                      <a href={p.liveUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-background px-3 py-1.5 text-xs font-semibold text-foreground">
-                        <Globe className="h-3.5 w-3.5" /> Live
-                      </a>
-                    )}
-                    {p.githubUrl && (
-                      <a href={p.githubUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-background/10 px-3 py-1.5 text-xs font-semibold text-background ring-1 ring-background/30">
-                        <Github className="h-3.5 w-3.5" /> Code
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  {p.category && <span className="rounded-full bg-secondary px-2.5 py-1 font-medium text-foreground/80">{p.category}</span>}
-                  {p.date && <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" /> {p.date}</span>}
-                </div>
-                <h3 className="mt-3 flex items-center justify-between gap-2 font-display text-xl font-semibold text-ink">
-                  {p.title}
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
-                </h3>
-                {p.technologies && p.technologies.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {p.technologies.slice(0, 5).map((t) => (
-                      <span key={t} className="rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{t}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </article>
-          ))}
+    <section id="work" className="relative py-24 md:py-32 bg-surface min-h-[400px]">
+      {loading ? (
+        <div className="flex h-40 items-center justify-center">
+          <span className="text-muted-foreground font-medium animate-pulse">Syncing Projects...</span>
         </div>
+      ) : !data.length ? (
+        <SectionSkeleton title="Coming Soon" />
+      ) : (
+        <div className="container-prose">
+          <SectionHeader 
+            kicker="Selected work" 
+            title="Engagements with measurable lift" 
+            subtitle="A small set of recent partnerships across fintech, healthcare, logistics and SaaS." 
+          />
+          
+          {/* Dynamic 2-column grid for portfolio rectangular cards */}
+          <div className="mt-14 grid gap-8 md:grid-cols-2">
+            {data.map((p) => (
+              <motion.article 
+                key={p.id} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-500 hover:shadow-elev"
+              >
+                {/* Image / Background Area */}
+                <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                  {p.gallery && p.gallery[0] ? (
+                    <img 
+                      src={p.gallery[0] || undefined} 
+                      alt={p.title} 
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:blur-sm" 
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand/5 to-brand/10 group-hover:blur-sm transition-all duration-700">
+                      <span className="font-display text-4xl font-bold text-brand/20 select-none uppercase tracking-tighter">{p.title}</span>
+                    </div>
+                  )}
 
-        <Stats />
-      </div>
+                  {/* Hover Reveal: Full Description */}
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-foreground/60 p-8 opacity-0 backdrop-blur-md transition-opacity duration-500 group-hover:opacity-100">
+                    <p className="text-center text-sm leading-relaxed text-background/90">
+                      {p.fullDescription || p.description}
+                    </p>
+                  </div>
+
+                  {/* Status Badge */}
+                  {p.status?.toLowerCase() === "completed" && (
+                    <div className="absolute left-4 top-4 z-20 rounded-full bg-success/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-background shadow-soft backdrop-blur-sm">
+                      Completed
+                    </div>
+                  )}
+                </div>
+
+                {/* Content Area */}
+                <div className="flex flex-1 flex-col p-8">
+                  {/* Top Row: Title + Client + Links */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <h3 className="truncate font-display text-2xl font-bold tracking-tight text-ink">
+                        {p.title}
+                      </h3>
+                      <p className="mt-1 text-xs font-medium uppercase tracking-widest text-brand">
+                        {p.client}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      {p.liveUrl && (
+                        <a 
+                          href={p.liveUrl} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground text-background shadow-soft transition-transform hover:-translate-y-0.5 active:scale-95"
+                          title="View Live"
+                        >
+                          <Globe className="h-4 w-4" />
+                        </a>
+                      )}
+                      {p.githubUrl && (
+                        <a 
+                          href={p.githubUrl} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white text-foreground shadow-soft transition-transform hover:-translate-y-0.5 active:scale-95"
+                          title="Source Code"
+                        >
+                          <Github className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Middle Area: Short Desc + Date */}
+                  <div className="mt-6 flex items-baseline justify-between gap-4">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {p.description}
+                    </p>
+                    {p.date && (
+                      <span className="shrink-0 text-[11px] font-medium text-muted-foreground/60 uppercase">
+                        {p.date}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Bottom Area: Dynamic Tech Chips */}
+                  {p.technologies && p.technologies.length > 0 && (
+                    <div className="mt-8 flex flex-wrap gap-2">
+                      {p.technologies.map((t) => (
+                        <span 
+                          key={t} 
+                          className="rounded-lg bg-secondary/80 px-2.5 py-1 text-[11px] font-semibold text-foreground/70 ring-1 ring-inset ring-foreground/5"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.article>
+            ))}
+          </div>
+
+          <Stats />
+        </div>
+      )}
     </section>
   );
 }

@@ -10,11 +10,19 @@ const pick = (r: SheetRow, ...keys: string[]) => {
 };
 
 function isActive(value: any) {
-  return ["active", "true", "1", "yes"].includes(String(value).toLowerCase().trim());
+  const v = String(value).toLowerCase().trim();
+  return ["active", "true", "1", "yes", "completed", "live", "featured"].includes(v);
 }
 
-const bool = (v: string) => isActive(v);
-const list = (v: string) => v.split(/[,;|]/).map((s) => s.trim()).filter(Boolean);
+const bool = (v: string) => {
+  const s = String(v).toLowerCase().trim();
+  return ["true", "1", "yes", "featured", "active"].includes(s);
+};
+
+const list = (v: string) => {
+  if (!v) return [];
+  return String(v).split(/[,;|]/).map((s) => s.trim()).filter(Boolean);
+};
 
 const normalizeIcon = (name: string) => {
   if (!name) return "";
@@ -99,7 +107,7 @@ export type ProjectItem = {
   id: string; title: string; category: string; client: string;
   description: string; fullDescription: string; technologies: string[];
   gallery: string[]; liveUrl: string; githubUrl: string;
-  featured: boolean; date: string;
+  featured: boolean; date: string; status: string;
 };
 export const transformProjects = (rows: any[] = []): ProjectItem[] => {
   if (!Array.isArray(rows)) return [];
@@ -114,9 +122,10 @@ export const transformProjects = (rows: any[] = []): ProjectItem[] => {
     gallery: list(pick(r, "gallery_images")),
     liveUrl: pick(r, "live_url"),
     githubUrl: pick(r, "github_url"),
-    featured: bool(pick(r, "featured")),
+    featured: ["true", "featured", "1", "yes"].includes(pick(r, "featured").toLowerCase()),
     date: pick(r, "completion_date"),
-  }));
+    status: pick(r, "status"),
+  })).filter(p => p.featured);
 };
 
 export type TestimonialItem = {
