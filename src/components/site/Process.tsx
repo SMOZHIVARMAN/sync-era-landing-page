@@ -58,9 +58,11 @@ export function Process() {
         />
 
         <div className="relative mt-24">
-          {/* Active Blue Progress Line - Spans the entire container and connects icons */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 bg-brand/20 z-0" />
+          {/* FIX 3 & 4: Center Progress Line Behavior & Timeline Icon Connection */}
+          {/* Background Line (Light Base) */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 bg-brand/10 z-0" />
           
+          {/* Active Progress Line (Animated Dark Blue) */}
           <motion.div 
             style={{ 
               scaleY: scrollYProgress,
@@ -71,6 +73,7 @@ export function Process() {
 
           <div className="space-y-16 md:space-y-24 relative">
             {processSteps.map((item, index) => {
+              console.log("PROCESS CARD:", item);
               const isEven = index % 2 === 0;
               const stepId = item.id || index;
               const stepTitle = item.title || "Step";
@@ -82,7 +85,7 @@ export function Process() {
                   key={stepId} 
                   className={`flex flex-col md:flex-row items-center justify-between relative ${isEven ? '' : 'md:flex-row-reverse'}`}
                 >
-                  {/* Card Side */}
+                  {/* FIX 1 & 2: Card Layout & Content Structure */}
                   <div className="w-full md:w-[42%] relative z-10">
                     <motion.div
                       initial={{ 
@@ -103,32 +106,28 @@ export function Process() {
                         duration: 0.6, 
                         ease: [0.21, 1, 0.36, 1] 
                       }}
-                      className="bg-white p-8 rounded-3xl border border-border/60 shadow-card hover:shadow-elev transition-shadow group relative"
+                      className="bg-white p-8 rounded-3xl border border-border/60 shadow-card hover:shadow-elev transition-all group relative min-h-fit h-auto flex flex-col"
                     >
-                      <div className="flex items-center justify-between mb-6">
-                        <span className="font-display text-5xl font-bold text-brand/10 group-hover:text-brand/20 transition-colors">
+                      {/* Top row: ID + Title (FIX 2) */}
+                      <div className="flex items-baseline gap-4 mb-4">
+                        <span className="font-display text-4xl font-bold text-brand/30 group-hover:text-brand/50 transition-colors leading-none shrink-0">
                           {String(index + 1).padStart(2, "0")}
                         </span>
-                        <div className="h-10 w-10 rounded-xl bg-brand/5 flex items-center justify-center text-brand">
-                          <span className="text-xs font-bold uppercase">
-                            {String(index + 1).padStart(2, "0")}
-                          </span>
-                        </div>
+                        <h3 className="text-2xl font-bold text-ink leading-tight">
+                          {stepTitle}
+                        </h3>
                       </div>
 
-                      <h3 className="text-2xl font-bold text-ink">
-                        {stepTitle}
-                      </h3>
-
+                      {/* Description below (FIX 2) */}
                       {stepDesc && (
-                        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                        <p className="text-sm leading-relaxed text-muted-foreground whitespace-normal overflow-visible block opacity-100 visible">
                           {stepDesc}
                         </p>
                       )}
                     </motion.div>
                   </div>
 
-                  {/* Center Icon Dot */}
+                  {/* Center Icon Dot (FIX 4) */}
                   <div className="relative z-20 h-14 w-14 rounded-full bg-white shadow-card border flex items-center justify-center overflow-hidden my-8 md:my-0 shadow-[0_0_0_8px_rgba(255,255,255,1)]">
                     {stepIcon ? (
                       <img
@@ -144,7 +143,7 @@ export function Process() {
                     )}
                   </div>
 
-                  {/* Empty Side (Desktop Only) */}
+                  {/* Empty Side (Desktop Only) (FIX 5) */}
                   <div className="hidden md:block md:w-[42%]" />
                 </div>
               );

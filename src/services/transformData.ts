@@ -226,15 +226,18 @@ export const transformSocial = (rows: any[] = []): SocialLink[] => {
 
 export type ProcessStep = { id: string; title: string; description: string; icon: string; order: number };
 export const transformProcess = (rows: any[] = []): ProcessStep[] => {
+  console.log("RAW PROCESS DATA:", rows);
   if (!Array.isArray(rows)) return [];
   // Use active() to filter and sorted() to order by the 'order' column
-  return sorted(active(rows)).map((r, i) => ({
+  const transformed = sorted(active(rows)).map((r, i) => ({
     id: pick(r, "id") || String(i + 1),
     title: pick(r, "title", "step_title", "name") || "Step",
-    description: pick(r, "description", "desc", "content", "info", "text", "short_description") || "",
+    description: pick(r, "description") || "",
     icon: pick(r, "icon", "image", "icon_url") || "",
     order: Number(pick(r, "order")) || i + 1,
   }));
+  console.log("TRANSFORMED PROCESS:", transformed);
+  return transformed;
 };
 
 export type ClientItem = { name: string; logo: string; website: string; featured: boolean };
