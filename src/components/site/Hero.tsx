@@ -4,7 +4,7 @@ import { useSheet } from "@/hooks/useSheet";
 import { transformHero, transformClients } from "@/services/transformData";
 import { LogoMark } from "./Navbar";
 import { SectionSkeleton } from "../ui/section-skeleton";
-import arrowAsset from "@/assets/arrow.png";
+import blueArrowAsset from "@/assets/blue_arrow.png";
 
 export function Hero() {
   const { data: raw, loading } = useSheet("hero");
@@ -55,22 +55,19 @@ export function Hero() {
 
   return (
     <section className="relative h-[100vh] min-h-[700px] flex flex-col justify-center overflow-hidden">
-      {/* 0. Background Wash (z-0) - Enhanced bluish atmosphere */}
+      {/* 0. Background Wash (z-0) - Subtle bluish atmosphere */}
       <div aria-hidden className="absolute inset-0 bg-white z-0" />
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_0%_100%,rgba(37,99,235,0.18),transparent_50%),radial-gradient(circle_at_100%_50%,rgba(37,99,235,0.12),transparent_60%)] z-0" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_10%_90%,rgba(37,99,235,0.22),transparent_50%),radial-gradient(circle_at_90%_50%,rgba(37,99,235,0.18),transparent_60%)] z-0" />
 
       {/* 1. Background Grid (z-[1]) */}
       <div aria-hidden className="absolute inset-0 grid-bg opacity-50 z-[1]" />
 
-      {/* 2. Large Decorative Arrow (z-[2]) - Higher visibility, extended trajectory */}
+      {/* 2. Large Decorative Arrow (z-[2]) - Corrected trajectory: starts bottom-left, ends far right-middle */}
       <div aria-hidden className="absolute inset-0 pointer-events-none select-none z-[2]">
         <img 
-          src={arrowAsset} 
+          src={blueArrowAsset} 
           alt="" 
-          className="absolute -left-[10%] -bottom-[5%] w-[110%] max-w-[1600px] h-auto opacity-[0.45] object-contain origin-bottom-left brightness-90 saturate-[1.3] mix-blend-multiply transition-all duration-700" 
-          style={{ 
-            filter: "drop-shadow(0 0 30px rgba(37,99,235,0.15))"
-          }}
+          className="absolute -left-[22%] -bottom-[15%] w-[165%] max-w-[2400px] h-auto opacity-[0.55] object-contain origin-bottom-left brightness-95 saturate-[1.2] mix-blend-multiply transition-all duration-700" 
         />
       </div>
 
