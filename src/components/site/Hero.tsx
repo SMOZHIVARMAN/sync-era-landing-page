@@ -62,12 +62,15 @@ export function Hero() {
       {/* 1. Background Grid (z-[1]) */}
       <div aria-hidden className="absolute inset-0 grid-bg opacity-50 z-[1]" />
 
-      {/* 2. Large Decorative Arrow (z-[2]) - Corrected trajectory: starts bottom-left, ends far right-middle */}
+      {/* 2. Large Decorative Arrow (z-[2]) - Background growth reveal: absolute bottom-left to top-right */}
       <div aria-hidden className="absolute inset-0 pointer-events-none select-none z-[2]">
-        <img 
+        <motion.img 
           src={blueArrowAsset} 
           alt="" 
-          className="absolute -left-[22%] -bottom-[25%] w-[165%] max-w-[2400px] h-auto opacity-[0.75] object-contain origin-bottom-left brightness-95 saturate-[1.2] mix-blend-multiply transition-all duration-700" 
+          initial={{ clipPath: 'inset(100% 100% 0% 0%)' }}
+          animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+          transition={{ duration: 1.8, ease: "easeOut", delay: 0.1 }}
+          className="absolute -left-[22%] -bottom-[25%] w-[165%] max-w-[2400px] h-auto opacity-[0.75] object-contain origin-bottom-left brightness-95 saturate-[1.2] mix-blend-multiply" 
         />
       </div>
 
