@@ -36,8 +36,8 @@ export function Values() {
       <div className="container-prose">
         <SectionHeader 
           kicker="Our values" 
-          title="Our Values" 
-          subtitle="The principles that guide our work and relationships" 
+          title="Principles that shape everything we build" 
+          subtitle="Core values that shape our culture, partnerships, and execution" 
         />
         
         <div className="mt-14 flex gap-6 justify-center items-center flex-wrap">

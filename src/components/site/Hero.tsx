@@ -25,7 +25,7 @@ export function Hero() {
   const reset = () => { x.set(0); y.set(0); };
 
   if (loading) return <div className="h-[100vh] flex items-center justify-center"><span className="animate-pulse text-muted-foreground font-medium">Syncing...</span></div>;
-  if (!raw.length || !data?.heading) return <SectionSkeleton title="Coming Soon" />;
+  if (!raw.length || !data?.heading) return <SectionSkeleton title="Loading" />;
 
   const renderHeading = (text: string) => {
     if (!text) return null;

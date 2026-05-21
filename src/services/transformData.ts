@@ -51,8 +51,8 @@ export const transformSettings = (rows: any[] = []) => {
   if (!Array.isArray(rows) || !rows.length) return {} as any;
   const r = rows[0];
   return {
-    company_name: pick(r, "company_name") || "Coming Soon",
-    tagline: pick(r, "tagline") || "Coming Soon",
+    company_name: pick(r, "company_name") || "Loading",
+    tagline: pick(r, "tagline") || "Loading",
     logo_url: pick(r, "logo_url") || "",
     favicon_url: pick(r, "favicon_url") || "",
     primary_color: pick(r, "primary_color") || "",
